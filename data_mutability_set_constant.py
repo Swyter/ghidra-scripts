@@ -1,8 +1,8 @@
 #Allows you to quickly set the data/string at the selected address as constant, to show the string value in the decompilation.
 #@author Swyter <swyterzone+ghidra@gmail.com>
 #@category Data
-#@keybinding Ctrl K
-#@menupath 
+#@keybinding Ctrl Shift K
+#@menupath Edit.Mark data as constant
 #@toolbar 
 
 from ghidra.program.model.data import MutabilitySettingsDefinition
@@ -19,6 +19,7 @@ from ghidra.program.model.data import MutabilitySettingsDefinition
 #      as well as when we've selected multiple of them.
 range = [currentAddress, currentAddress.add(1)]
 
+# swy: when currentSelection is None, currentAddress is filled out, and vice versa.
 if currentSelection:
 	range = [currentSelection.minAddress, currentSelection.maxAddress]
 
@@ -32,7 +33,7 @@ while cur_addr < range[1]:
 		continue
 
 	# swy: avoid setting the same object multiple times
-	#      as we swim through contiguous ranges
+	#      as we swim through contiguous ranges.
 	if prev_set_data == cur_data:
 		continue
 
