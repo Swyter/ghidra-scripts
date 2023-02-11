@@ -1,7 +1,7 @@
 #TODO write a description for this script
-#@author 
-#@category _NEW_
-#@keybinding 
+#@author Swyter <swyterzone+ghidra@gmail.com>
+#@category Games
+#@keybinding Ctrl + Alt + 1
 #@menupath 
 #@toolbar 
 
@@ -36,8 +36,8 @@ def getULong(address):  return getLong(address)  & 0xFFFFFFFFFFFFFFFF
 
 dt = getDataTypes("pointer")[0]
 addr = currentAddress;
-i = 0
-while getUInt(addr) != 0 or addr <= currentAddress.add(4 + 4):
+i = 0; null_counter = 0
+while True:
 	p_addr_int = getUInt(addr)
 	p_addr = currentProgram.getAddressFactory().getAddress("%x" % (p_addr_int))
 	p_addr_block = currentProgram.getMemory().getBlock(p_addr)
@@ -46,23 +46,36 @@ while getUInt(addr) != 0 or addr <= currentAddress.add(4 + 4):
 	# swy: the first entry of the vtable is the RTTI pointer (or NULL when none)
 	#      the second one seems to be NULL, and the third one is the third one the destructor
 	#      any functions after that are optional
- 	if i == 0 and p_addr:
+ 	if i == 0 and p_addr and p_addr_int != 0:
 		rtti_str_addr = intToAddress(getUInt(p_addr))
 		clearListing(p_addr, p_addr.add(4 + 4))
 		createData(p_addr,        dt);
 		createData(p_addr.add(4), dt);
 
-		rtti_str_addr_tmp = rtti_str_addr
-		while getUInt(rtti_str_addr_tmp) != 0:
+		rtti_str_addr_tmp = rtti_str_addr; j = 32
+		while getUInt(rtti_str_addr_tmp) != 0 or j > 0:
 			clearListing(rtti_str_addr_tmp)
-			rtti_str_addr_tmp = rtti_str_addr_tmp.add(1)
+			rtti_str_addr_tmp = rtti_str_addr_tmp.add(1); j -= 1
 
 		createAsciiString(rtti_str_addr)
-		print("Found RTTI name: ", getDataAt(rtti_str_addr).getValue())
-	if i >= 2 and (p_addr_int == 0 or not p_addr_block):
+		print("[i] Found RTTI name: %s" % getDataAt(rtti_str_addr).getValue())
+
+	if i >= 2 and p_addr_int == 0:
+		null_counter += 1
+		print("[i] counter", null_counter)
+	elif null_counter != 0:
+		null_counter = 0
+		print("[i] counter resetted back to zero")
+
+	if i >= 2 and not p_addr_block and not p_addr_int == 0:
+		print("[!] pointer points somewhere outside the valid memory range, not a pointer, bailing out...")
 		break;
-	if i >= 2 and not p_addr_block.isExecute():
+	if i >= 2 and p_addr_block and not p_addr_block.isExecute() and not p_addr_int == 0:
+		print("[!] pointer points to non-executable memory; not a function, bailing out...")
 		break;
+	if null_counter >= 3:
+		print("[!] too many NULL fields, bailing out...")
+		break
 
 	clearListing(addr, addr.add(4))
 	createData(addr, dt);
