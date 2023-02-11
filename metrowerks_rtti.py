@@ -36,7 +36,7 @@ def getULong(address):  return getLong(address)  & 0xFFFFFFFFFFFFFFFF
 
 dt = getDataTypes("pointer")[0]
 addr = currentAddress;
-i = 0; null_counter = 0
+i = 0
 while True:
 	p_addr_int = getUInt(addr)
 	p_addr = currentProgram.getAddressFactory().getAddress("%x" % (p_addr_int))
@@ -46,27 +46,25 @@ while True:
 	# swy: the first entry of the vtable is the RTTI pointer (or NULL when none)
 	#      the second one seems to be NULL, and the third one is the third one the destructor
 	#      any functions after that are optional
- 	if i == 0 and p_addr and p_addr_int != 0:
+	if i == 0 and p_addr and p_addr_int != 0:
 		rtti_str_addr = intToAddress(getUInt(p_addr))
+		rtti_hie_addr = intToAddress(getUInt(p_addr.add(4)))
 		clearListing(p_addr, p_addr.add(4 + 4))
 		createData(p_addr,        dt);
 		createData(p_addr.add(4), dt);
 
-		rtti_str_addr_tmp = rtti_str_addr; j = 32
-		while getUInt(rtti_str_addr_tmp) != 0 or j > 0:
-			clearListing(rtti_str_addr_tmp)
-			rtti_str_addr_tmp = rtti_str_addr_tmp.add(1); j -= 1
+		if addressToInt(rtti_str_addr) != 0:
+			rtti_str_addr_tmp = rtti_str_addr; j = 32
+			while getUInt(rtti_str_addr_tmp) != 0 or j > 0:
+				clearListing(rtti_str_addr_tmp)
+				rtti_str_addr_tmp = rtti_str_addr_tmp.add(1); j -= 1
 
-		createAsciiString(rtti_str_addr)
-		print("[i] Found RTTI name: %s" % getDataAt(rtti_str_addr).getValue())
+			createAsciiString(rtti_str_addr)
+			print("[i] Found RTTI name: %s" % getDataAt(rtti_str_addr).getValue())
 
-	if i >= 2 and p_addr_int == 0:
-		null_counter += 1
-		print("[i] counter", null_counter)
-	elif null_counter != 0:
-		null_counter = 0
-		print("[i] counter has been reset back to zero")
-
+		if addressToInt(rtti_hie_addr) != 0:
+			print("[i] Found RTTI hierarchy")
+			
 	if i >= 2 and not p_addr_block and not p_addr_int == 0:
 		print("[!] pointer points somewhere outside the valid memory range, not a pointer, bailing out...")
 		break;
