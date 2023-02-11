@@ -48,7 +48,10 @@ while True:
 	#      any functions after that are optional
 	if i == 0 and p_addr and p_addr_int != 0:
 		def fill_out_rtti_at(p_rtti_addr, level = 0):
-			print("--"*level + "[i] Scanning RTTI at %x" % addressToInt(p_rtti_addr))
+			def print_indent(args):
+				args = ("--" * level) + args
+				print(args)
+			print_indent("[i] Scanning RTTI at %x" % addressToInt(p_rtti_addr))
 
 			rtti_str_addr = intToAddress(getUInt(p_rtti_addr))
 			rtti_hie_addr = intToAddress(getUInt(p_rtti_addr.add(4)))
@@ -63,12 +66,12 @@ while True:
 					rtti_str_addr_tmp = rtti_str_addr_tmp.add(1); j -= 1
 
 				createAsciiString(rtti_str_addr)
-				print("--"*level + "[i] Found RTTI name: %s" % getDataAt(rtti_str_addr).getValue())
+				print_indent("[i] Found RTTI name: %s" % getDataAt(rtti_str_addr).getValue())
 			else:
-				print("--"*level + "[i] Empty RTTI name")
+				print_indent("[i] Empty RTTI name")
 
 			if addressToInt(rtti_hie_addr) != 0:
-				print("--"*level + "[i] Found RTTI hierarchy at %x" % addressToInt(rtti_hie_addr))
+				print_indent("[i] Found RTTI hierarchy at %x" % addressToInt(rtti_hie_addr))
 
 				rtti_hie_addr_tmp = rtti_hie_addr
 				while getUInt(rtti_hie_addr_tmp) != 0:
@@ -79,7 +82,7 @@ while True:
 					fill_out_rtti_at(intToAddress(getUInt(rtti_hie_addr_tmp)), level + 1)
 					rtti_hie_addr_tmp = rtti_hie_addr_tmp.add(4 + 4)
 			else:
-				print("--"*level + "[i] Empty RTTI hierarchy")
+				print_indent("[i] Empty RTTI hierarchy")
 
 		fill_out_rtti_at(p_addr)
 			
