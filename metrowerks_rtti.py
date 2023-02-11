@@ -10,7 +10,9 @@
 
 dt = getDataTypes("pointer")[0]
 addr = currentAddress;
-
-clearListing(addr, addr.add(4 + 4))
-createData(addr, dt);
-createData(addr.add(4), dt);
+i = 0
+while getInt(addr) != 0 or addr <= currentAddress.add(4 + 4):
+	clearListing(addr, addr.add(4))
+	createData(addr, dt);
+	addr = addr.add(4); i+=1
+	print(addr, i)
