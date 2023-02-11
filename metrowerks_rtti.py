@@ -48,6 +48,7 @@ while True:
 	#      any functions after that are optional
 	if i == 0 and p_addr and p_addr_int != 0:
 		def fill_out_rtti_at(p_rtti_addr, level = 0):
+			rtti_name = None
 			def print_indent(args):
 				args = ("  " * level) + args
 				print(args)
@@ -65,7 +66,8 @@ while True:
 					rtti_str_addr_tmp = rtti_str_addr_tmp.add(1); j -= 1
 
 				createAsciiString(rtti_str_addr)
-				print_indent("  |- Found RTTI name: %s" % getDataAt(rtti_str_addr).getValue())
+				rtti_name = getDataAt(rtti_str_addr).getValue()
+				print_indent("  |- Found RTTI name: %s" % rtti_name)
 			else:
 				print_indent("  |- Empty RTTI name")
 
@@ -85,8 +87,15 @@ while True:
 			else:
 				print_indent("  |- Empty RTTI hierarchy")
 
+			if rtti_name and not getSymbolAt(p_rtti_addr):
+				createLabel(p_rtti_addr, rtti_name + "::__RTTI__", True)
+			return rtti_name
+
 		print("[i] Scanning RTTI at %x" % addressToInt(p_addr))
-		fill_out_rtti_at(p_addr)
+		name = fill_out_rtti_at(p_addr)
+
+		if name and not getSymbolAt(currentAddress):
+			createLabel(currentAddress, name + "::__vt", True)
 			
 	if i >= 2 and not p_addr_block and not p_addr_int == 0:
 		print("[!] pointer points somewhere outside the valid memory range, not a pointer, bailing out...")
