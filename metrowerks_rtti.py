@@ -64,6 +64,13 @@ while True:
 
 		if addressToInt(rtti_hie_addr) != 0:
 			print("[i] Found RTTI hierarchy")
+
+			rtti_hie_addr_tmp = rtti_hie_addr
+			while getUInt(rtti_hie_addr_tmp) != 0:
+				clearListing(rtti_hie_addr_tmp, rtti_hie_addr_tmp.add(4 + 4))
+				createData(rtti_hie_addr_tmp,        dt);
+				createData(rtti_hie_addr_tmp.add(4), dt);
+				rtti_hie_addr_tmp = rtti_hie_addr_tmp.add(4 + 4)
 			
 	if i >= 2 and not p_addr_block and not p_addr_int == 0:
 		print("[!] pointer points somewhere outside the valid memory range, not a pointer, bailing out...")
