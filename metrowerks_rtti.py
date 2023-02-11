@@ -73,7 +73,7 @@ while True:
 	if i >= 2 and p_addr_block and not p_addr_block.isExecute() and not p_addr_int == 0:
 		print("[!] pointer points to non-executable memory; not a function, bailing out...")
 		break;
-	if null_counter >= 3:
+	if null_counter >= 2:
 		print("[!] too many NULL fields, bailing out...")
 		break
 
