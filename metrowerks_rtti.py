@@ -41,7 +41,7 @@ while True:
 	p_addr_int = getUInt(addr)
 	p_addr = currentProgram.getAddressFactory().getAddress("%x" % (p_addr_int))
 	p_addr_block = currentProgram.getMemory().getBlock(p_addr)
-	print(i, hex(p_addr_int), p_addr, p_addr_block, p_addr_block and p_addr_block.getPermissions())
+	print(i, "%x" % (p_addr_int), p_addr, p_addr_block, p_addr_block and p_addr_block.getPermissions())
 
 	# swy: the first entry of the vtable is the RTTI pointer (or NULL when none)
 	#      the second one seems to be NULL, and the third one is the third one the destructor
@@ -65,7 +65,7 @@ while True:
 		print("[i] counter", null_counter)
 	elif null_counter != 0:
 		null_counter = 0
-		print("[i] counter resetted back to zero")
+		print("[i] counter has been reset back to zero")
 
 	if i >= 2 and not p_addr_block and not p_addr_int == 0:
 		print("[!] pointer points somewhere outside the valid memory range, not a pointer, bailing out...")
@@ -73,11 +73,11 @@ while True:
 	if i >= 2 and p_addr_block and not p_addr_block.isExecute() and not p_addr_int == 0:
 		print("[!] pointer points to non-executable memory; not a function, bailing out...")
 		break;
-	if null_counter >= 2:
-		print("[!] too many NULL fields, bailing out...")
-		break
 
-	clearListing(addr, addr.add(4))
-	createData(addr, dt);
+	clearListing(addr)
+	createData(addr, dt)
 	addr = addr.add(4); i+=1
-	print(addr, i)
+
+	if i >= 2 and getUInt(addr) == 0 and getUInt(addr.add(4)) == 0:
+		print("[!] too many upcoming NULL fields, bailing out...")
+		break
