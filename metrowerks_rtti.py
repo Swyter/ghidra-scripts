@@ -20,7 +20,7 @@ def addressToInt(ghidra_addr):
     return int(ghidra_addr.toString(), 16)
 
 def intToAddress(addr):
-    return addressFactory.getAddress(hex(addr))
+    return addressFactory.getAddress("%x" % addr)
 
 blocks = currentProgram.getMemory().getBlocks()
 #for block in blocks:
@@ -45,8 +45,10 @@ while getUInt(addr) != 0 or addr <= currentAddress.add(4 + 4):
 
  	#if i == 0 and p_addr:
 	#	break
-	#if i >= 2 and addr_block != None and not addr_block.isExecute():
-	#	break;
+	if i >= 2 and (p_addr_int == 0 or not p_addr_block):
+		break;
+	if i >= 2 and not p_addr_block.isExecute():
+		break;
 
 	clearListing(addr, addr.add(4))
 	createData(addr, dt);
