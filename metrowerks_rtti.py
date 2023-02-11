@@ -43,8 +43,16 @@ while getUInt(addr) != 0 or addr <= currentAddress.add(4 + 4):
 	p_addr_block = currentProgram.getMemory().getBlock(p_addr)
 	print(i, hex(p_addr_int), p_addr, p_addr_block, p_addr_block and p_addr_block.getPermissions())
 
- 	#if i == 0 and p_addr:
-	#	break
+	# swy: the first entry of the vtable is the RTTI pointer (or NULL when none)
+	#      the second one seems to be NULL, and the third one is the third one the destructor
+	#      any functions after that are optional
+ 	if i == 0 and p_addr:
+		rtti_str_addr = getUInt(addr)
+		clearListing(p_addr, p_addr.add(4))
+		createData(p_addr,        dt);
+		createData(p_addr.add(4), dt);
+
+		#createAsciiString
 	if i >= 2 and (p_addr_int == 0 or not p_addr_block):
 		break;
 	if i >= 2 and not p_addr_block.isExecute():
