@@ -74,9 +74,12 @@ while True:
 			if addressToInt(rtti_hie_addr) != 0:
 				print_indent("  |- Found RTTI hierarchy at %x" % addressToInt(rtti_hie_addr))
 
+				if rtti_name: # and not getSymbolAt(rtti_hie_addr):
+					createLabel(rtti_hie_addr, rtti_name + "::__HIER", True) # swy: this name is fan-made
+
 				rtti_hie_addr_tmp = rtti_hie_addr; h = 0
 				while getUInt(rtti_hie_addr_tmp) != 0:
-					clearListing(rtti_hie_addr_tmp, rtti_hie_addr_tmp.add(4 + 4))
+					clearListing(rtti_hie_addr_tmp, rtti_hie_addr_tmp.add(4))
 					createData(rtti_hie_addr_tmp,        dt);
 					createData(rtti_hie_addr_tmp.add(4), dt);
 
@@ -88,7 +91,7 @@ while True:
 				print_indent("  |- Empty RTTI hierarchy")
 
 			if rtti_name and not getSymbolAt(p_rtti_addr):
-				createLabel(p_rtti_addr, rtti_name + "::__RTTI__", True)
+				createLabel(p_rtti_addr, rtti_name + "::__RTTI", True)
 			return rtti_name
 
 		print("[i] Scanning RTTI at %x" % addressToInt(p_addr))
