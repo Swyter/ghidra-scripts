@@ -47,12 +47,13 @@ while getUInt(addr) != 0 or addr <= currentAddress.add(4 + 4):
 	#      the second one seems to be NULL, and the third one is the third one the destructor
 	#      any functions after that are optional
  	if i == 0 and p_addr:
-		rtti_str_addr = getUInt(addr)
+		rtti_str_addr = intToAddress(getUInt(p_addr))
 		clearListing(p_addr, p_addr.add(4))
 		createData(p_addr,        dt);
 		createData(p_addr.add(4), dt);
 
-		#createAsciiString
+		#createAsciiString(rtti_str_addr)
+		print("Found RTTI name: ", getDataAt(rtti_str_addr).getValue())
 	if i >= 2 and (p_addr_int == 0 or not p_addr_block):
 		break;
 	if i >= 2 and not p_addr_block.isExecute():
