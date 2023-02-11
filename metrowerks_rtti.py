@@ -47,30 +47,37 @@ while True:
 	#      the second one seems to be NULL, and the third one is the third one the destructor
 	#      any functions after that are optional
 	if i == 0 and p_addr and p_addr_int != 0:
-		rtti_str_addr = intToAddress(getUInt(p_addr))
-		rtti_hie_addr = intToAddress(getUInt(p_addr.add(4)))
-		clearListing(p_addr, p_addr.add(4 + 4))
-		createData(p_addr,        dt);
-		createData(p_addr.add(4), dt);
+		def fill_out_rtti_at(p_rtti_addr):
+			print("[i] Scanning RTTI at", p_rtti_addr)
 
-		if addressToInt(rtti_str_addr) != 0:
-			rtti_str_addr_tmp = rtti_str_addr; j = 32
-			while getUInt(rtti_str_addr_tmp) != 0 or j > 0:
-				clearListing(rtti_str_addr_tmp)
-				rtti_str_addr_tmp = rtti_str_addr_tmp.add(1); j -= 1
+			rtti_str_addr = intToAddress(getUInt(p_rtti_addr))
+			rtti_hie_addr = intToAddress(getUInt(p_rtti_addr.add(4)))
+			clearListing(p_rtti_addr, p_rtti_addr.add(4 + 4))
+			createData(p_rtti_addr,        dt);
+			createData(p_rtti_addr.add(4), dt);
 
-			createAsciiString(rtti_str_addr)
-			print("[i] Found RTTI name: %s" % getDataAt(rtti_str_addr).getValue())
+			if addressToInt(rtti_str_addr) != 0:
+				rtti_str_addr_tmp = rtti_str_addr; j = 32
+				while getUInt(rtti_str_addr_tmp) != 0 or j > 0:
+					clearListing(rtti_str_addr_tmp)
+					rtti_str_addr_tmp = rtti_str_addr_tmp.add(1); j -= 1
 
-		if addressToInt(rtti_hie_addr) != 0:
-			print("[i] Found RTTI hierarchy")
+				createAsciiString(rtti_str_addr)
+				print("[i] Found RTTI name: %s" % getDataAt(rtti_str_addr).getValue())
 
-			rtti_hie_addr_tmp = rtti_hie_addr
-			while getUInt(rtti_hie_addr_tmp) != 0:
-				clearListing(rtti_hie_addr_tmp, rtti_hie_addr_tmp.add(4 + 4))
-				createData(rtti_hie_addr_tmp,        dt);
-				createData(rtti_hie_addr_tmp.add(4), dt);
-				rtti_hie_addr_tmp = rtti_hie_addr_tmp.add(4 + 4)
+			if addressToInt(rtti_hie_addr) != 0:
+				print("[i] Found RTTI hierarchy at", rtti_hie_addr)
+
+				rtti_hie_addr_tmp = rtti_hie_addr
+				while getUInt(rtti_hie_addr_tmp) != 0:
+					clearListing(rtti_hie_addr_tmp, rtti_hie_addr_tmp.add(4 + 4))
+					createData(rtti_hie_addr_tmp,        dt);
+					createData(rtti_hie_addr_tmp.add(4), dt);
+
+					fill_out_rtti_at(intToAddress(getUInt(rtti_hie_addr_tmp)))
+					rtti_hie_addr_tmp = rtti_hie_addr_tmp.add(4 + 4)
+
+		fill_out_rtti_at(p_addr)
 			
 	if i >= 2 and not p_addr_block and not p_addr_int == 0:
 		print("[!] pointer points somewhere outside the valid memory range, not a pointer, bailing out...")
