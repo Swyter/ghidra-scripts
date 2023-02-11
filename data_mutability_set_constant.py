@@ -17,15 +17,15 @@ from ghidra.program.model.data import MutabilitySettingsDefinition
 
 # swy: make it work when there's just a single line highlighted,
 #      as well as when we've selected multiple of them.
-range = [currentAddress, currentAddress.add(1)]
+range = {"first": currentAddress, "last": currentAddress.add(1)}
 
 # swy: when currentSelection is None, currentAddress is filled out, and vice versa.
 if currentSelection:
-	range = [currentSelection.minAddress, currentSelection.maxAddress]
+	range = {"first": currentSelection.minAddress, "last": currentSelection.maxAddress}
 
-prev_set_data = None; cur_addr = range[0]
-while cur_addr < range[1]:
-	# print(cur_addr, range[1])
+prev_set_data = None; cur_addr = range["first"]
+while cur_addr < range["last"]:
+	# print(cur_addr, range["last"])
 	cur_data = getDataAt(cur_addr)
 	cur_addr = cur_addr.add(1)
 
