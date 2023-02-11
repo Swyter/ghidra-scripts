@@ -48,11 +48,16 @@ while getUInt(addr) != 0 or addr <= currentAddress.add(4 + 4):
 	#      any functions after that are optional
  	if i == 0 and p_addr:
 		rtti_str_addr = intToAddress(getUInt(p_addr))
-		clearListing(p_addr, p_addr.add(4))
+		clearListing(p_addr, p_addr.add(4 + 4))
 		createData(p_addr,        dt);
 		createData(p_addr.add(4), dt);
 
-		#createAsciiString(rtti_str_addr)
+		rtti_str_addr_tmp = rtti_str_addr
+		while getUInt(rtti_str_addr_tmp) != 0:
+			clearListing(rtti_str_addr_tmp)
+			rtti_str_addr_tmp = rtti_str_addr_tmp.add(1)
+
+		createAsciiString(rtti_str_addr)
 		print("Found RTTI name: ", getDataAt(rtti_str_addr).getValue())
 	if i >= 2 and (p_addr_int == 0 or not p_addr_block):
 		break;
