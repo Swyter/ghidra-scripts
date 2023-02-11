@@ -38,7 +38,16 @@ dt = getDataTypes("pointer")[0]
 addr = currentAddress;
 i = 0
 while getUInt(addr) != 0 or addr <= currentAddress.add(4 + 4):
-	print("%X" % getUInt(addr))
+	p_addr_int = getUInt(addr)
+	p_addr = currentProgram.getAddressFactory().getAddress("%x" % (p_addr_int))
+	p_addr_block = currentProgram.getMemory().getBlock(p_addr)
+	print(i, hex(p_addr_int), p_addr, p_addr_block, p_addr_block and p_addr_block.getPermissions())
+
+ 	#if i == 0 and p_addr:
+	#	break
+	#if i >= 2 and addr_block != None and not addr_block.isExecute():
+	#	break;
+
 	clearListing(addr, addr.add(4))
 	createData(addr, dt);
 	addr = addr.add(4); i+=1
