@@ -21,7 +21,7 @@ range = {"first": currentAddress, "last": currentAddress.add(1)}
 
 # swy: when currentSelection is None, currentAddress is filled out, and vice versa.
 if currentSelection:
-	range = {"first": currentSelection.minAddress, "last": currentSelection.maxAddress}
+	range = {"first": currentSelection.minAddress, "last": currentSelection.maxAddress.add(1)}
 
 prev_set_data = None; cur_addr = range["first"]
 while cur_addr < range["last"]:
@@ -38,7 +38,8 @@ while cur_addr < range["last"]:
 		continue
 
 	cur_data.setLong(
-		MutabilitySettingsDefinition.MUTABILITY, MutabilitySettingsDefinition.CONSTANT
+		MutabilitySettingsDefinition.MUTABILITY,
+		MutabilitySettingsDefinition.CONSTANT
 	)
 	prev_set_data = cur_data
 	
