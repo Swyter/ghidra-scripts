@@ -44,8 +44,16 @@ while True:
 	print(i, "%x" % (p_addr_int), p_addr, p_addr_block, p_addr_block and p_addr_block.getPermissions())
 
 	# swy: the first entry of the vtable is the RTTI pointer (or NULL when none)
-	#      the second one seems to be NULL, and the third one is the third one the destructor
-	#      any functions after that are optional
+	#      the second one seems to be NULL, and the third one tends to be the
+	#      destructor; any functions after that are optional.
+	#      e.g. vtable[0] -> rtti[0] -> C string with class name
+	#                        rtti[1] -> hierarchy[0] -> rtti_parent_a[0] -> ...
+	#                                                   rtti_parent_a[1] -> ...
+	#                                   hierarchy[1] = 0
+	#                                   hierarchy[2] -> rtti_parent_b[0] -> C string...
+	#                                                   rtti_parent_b[1] -> hierarchy_parent_b[0]
+	#                                   hierarchy[1] = 0
+	#                                   hierarchy[3] -> NULL (end marker, no more parent classes)
 	if i == 0 and p_addr and p_addr_int != 0:
 		def fill_out_rtti_at(p_rtti_addr, level = 0):
 			rtti_name = None
