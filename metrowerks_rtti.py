@@ -123,7 +123,7 @@ while True:
 			print("[!] pointer does not seem to point to the first instruction of a function block...")
 			break
 
-	clearListing(addr, addr.add(4))
+	clearListing(addr, addr.add(3)) # swy: the end range must be 4 minus one to clean 4 bytes :)
 	createData(addr, dt)
 	addr = addr.add(4); i+=1
 
