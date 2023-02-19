@@ -117,11 +117,11 @@ while True:
 
 	if i >= 2 and p_addr_block:
 		prev_func = getUInt(p_addr.subtract(4)) 
-		if not prev_func in [0, 0x4e800020]: # swy: to ensure that we're the first instruction of a function we check if the previous uint has zero/padding or a blr instruction from the end of the previous function (only if they are both perfectly aligned)
+		if not prev_func in [0, 0x4e800020, 0x4e800420]: # swy: to ensure that we're the first instruction of a function we check if the previous uint has zero/padding or a blr/bctr instruction from the end of the previous function (only if they are both perfectly aligned)
 			print("[!] pointer does not seem to point to the first instruction of a function block...")
 			break
 
-	clearListing(addr)
+	clearListing(addr, addr.add(4))
 	createData(addr, dt)
 	addr = addr.add(4); i+=1
 
