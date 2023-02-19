@@ -83,7 +83,7 @@ while True:
 				print_indent("  |- Found RTTI hierarchy at %x" % addressToInt(rtti_hie_addr))
 
 				if rtti_name: # and not getSymbolAt(rtti_hie_addr):
-					createLabel(rtti_hie_addr, rtti_name + "::__HIER", True) # swy: this name is fan-made
+					createLabel(rtti_hie_addr, rtti_name + "::__hier", True) # swy: this name is fan-made
 
 				rtti_hie_addr_tmp = rtti_hie_addr; h = 0
 				while getUInt(rtti_hie_addr_tmp) != 0:
@@ -114,6 +114,12 @@ while True:
 	if i >= 2 and p_addr_block and not p_addr_block.isExecute() and not p_addr_int == 0:
 		print("[!] pointer points to non-executable memory; not a function, bailing out...")
 		break;
+
+	if i >= 2 and p_addr_block:
+		prev_func = getUInt(p_addr.subtract(4)) 
+		if not prev_func in [0, 0x4e800020]: # swy: to ensure that we're the first instruction of a function we check if the previous uint has zero/padding or a blr instruction from the end of the previous function (only if they are both perfectly aligned)
+			print("[!] pointer does not seem to point to the first instruction of a function block...")
+			break
 
 	clearListing(addr)
 	createData(addr, dt)
