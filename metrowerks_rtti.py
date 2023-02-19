@@ -115,9 +115,11 @@ while True:
 		print("[!] pointer points to non-executable memory; not a function, bailing out...")
 		break;
 
-	if i >= 2 and p_addr_block:
-		prev_func = getUInt(p_addr.subtract(4)) 
-		if not prev_func in [0, 0x4e800020, 0x4e800420]: # swy: to ensure that we're the first instruction of a function we check if the previous uint has zero/padding or a blr/bctr instruction from the end of the previous function (only if they are both perfectly aligned)
+	# swy: to ensure that we're the first instruction of a function we could check if the previous uint has zero/padding
+	#      or a blr/bctr instruction from the end of the previous function (only if they are both perfectly aligned)
+	#      unfortunately that got a lot of false negatives, and in most cases we're just trying to avoid switch case look-up pointers
+	#      another property of vtables is that they shouldn't be referenced by anything directly
+	if i >= 2 and len(getReferencesTo(addr)) > 0:
 			print("[!] pointer does not seem to point to the first instruction of a function block...")
 			break
 
