@@ -54,7 +54,7 @@ while True:
 	#                                                   rtti_parent_b[1] -> hierarchy_parent_b[0]
 	#                                   hierarchy[1] = 0
 	#                                   hierarchy[3] -> NULL (end marker, no more parent classes)
-	if i == 0 and p_addr and p_addr_int != 0:
+	if i == 0 and p_addr and p_addr_int != 0 and p_addr_block and not p_addr_block.isExecute():
 		def fill_out_rtti_at(p_rtti_addr, level = 0):
 			rtti_name = None
 			def print_indent(args):
@@ -125,6 +125,17 @@ while True:
 
 	clearListing(addr, addr.add(3)) # swy: the end range must be 4 minus one to clean 4 bytes :)
 	createData(addr, dt)
+
+	if p_addr_block and p_addr_block.isExecute():
+
+		fun = getFunctionAt(p_addr)
+
+		if fun and fun.getName().startswith("FUN_"):
+			fun.setName("vFUN_%x" % p_addr_int, ghidra.program.model.symbol.SourceType.ANALYSIS)
+		
+		if not fun:
+			createFunction(p_addr, "vFUN_%x" % p_addr_int)
+
 	addr = addr.add(4); i+=1
 
 	if i >= 2 and getUInt(addr) == 0 and getUInt(addr.add(4)) == 0:
