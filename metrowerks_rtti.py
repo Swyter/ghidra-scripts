@@ -12,6 +12,8 @@ False
 True
 >>> currentProgram.getDataTypeManager().createCategory(ghidra.program.model.data.CategoryPath("/_LOL"))
 djinn.elf/_LOL
+>>> currentProgram.getDataTypeManager().getRootCategory().removeEmptyCategory("_LOL", None)
+True
 '''
 
 # https://github.com/ghidraninja/ghidra_scripts/blob/master/golang_renamer.py
