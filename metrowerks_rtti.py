@@ -5,12 +5,13 @@
 #@menupath 
 #@toolbar 
 
-
 '''
 >>> currentProgram.getMemory().getBlock(currentProgram.getAddressFactory().getAddress("0x8080b600")).isExecute()
 False
 >>> currentProgram.getMemory().getBlock(currentProgram.getAddressFactory().getAddress("0x80799500")).isExecute()
 True
+>>> currentProgram.getDataTypeManager().createCategory(ghidra.program.model.data.CategoryPath("/_LOL"))
+djinn.elf/_LOL
 '''
 
 # https://github.com/ghidraninja/ghidra_scripts/blob/master/golang_renamer.py
