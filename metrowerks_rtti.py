@@ -14,6 +14,8 @@ True
 djinn.elf/_LOL
 >>> currentProgram.getDataTypeManager().getRootCategory().removeEmptyCategory("_LOL", None)
 True
+>>> ghidra.program.model.data.PointerDataType(getFunctionAt(getReferencesFrom(currentAddress)[0].getToAddress()).getSignature())
+>>> getFunctionAt(currentAddress).setCallingConvention("__thiscall")
 '''
 
 # https://github.com/ghidraninja/ghidra_scripts/blob/master/golang_renamer.py
@@ -137,7 +139,10 @@ while True:
 			fun.setName("vFUN_%x" % p_addr_int, ghidra.program.model.symbol.SourceType.ANALYSIS)
 		
 		if not fun:
-			createFunction(p_addr, "vFUN_%x" % p_addr_int)
+			fun = createFunction(p_addr, "vFUN_%x" % p_addr_int)
+
+		if fun.getCallingConventionName() != "__thiscall":
+			fun.setCallingConvention("__thiscall")
 
 	addr = addr.add(4); i+=1
 
