@@ -40,7 +40,12 @@ def getULong(address):  return getLong(address)  & 0xFFFFFFFFFFFFFFFF
 #TODO Add User Code Here
 
 dt = getDataTypes("pointer")[0]
-addr = currentAddress;
+addr = currentAddress; max_addr = None
+
+if currentSelection:
+	addr     = currentSelection.minAddress
+	max_addr = currentSelection.maxAddress.add(1)
+
 i = 0
 while True:
 	p_addr_int = getUInt(addr)
@@ -113,10 +118,10 @@ while True:
 		if name and not getSymbolAt(currentAddress):
 			createLabel(currentAddress, name + "::__vt", True)
 			
-	if i >= 2 and not p_addr_block and not p_addr_int == 0:
+	if i >= 2 and not max_addr and not p_addr_block and not p_addr_int == 0:
 		print("[!] pointer points somewhere outside the valid memory range, not a pointer, bailing out...")
 		break;
-	if i >= 2 and p_addr_block and not p_addr_block.isExecute() and not p_addr_int == 0:
+	if i >= 2 and not max_addr and p_addr_block and not p_addr_block.isExecute() and not p_addr_int == 0:
 		print("[!] pointer points to non-executable memory; not a function, bailing out...")
 		break;
 
@@ -124,7 +129,7 @@ while True:
 	#      or a blr/bctr instruction from the end of the previous function (only if they are both perfectly aligned)
 	#      unfortunately that got a lot of false negatives, and in most cases we're just trying to avoid switch case look-up pointers
 	#      another property of vtables is that they shouldn't be referenced by anything directly
-	if i >= 2 and len(getReferencesTo(addr)) > 0:
+	if i >= 2 and not max_addr and len(getReferencesTo(addr)) > 0:
 			print("[!] pointer does not seem to point to the first instruction of a function block...")
 			break
 
@@ -146,6 +151,10 @@ while True:
 
 	addr = addr.add(4); i+=1
 
-	if i >= 2 and getUInt(addr) == 0 and getUInt(addr.add(4)) == 0:
+	if i >= 2 and not max_addr and getUInt(addr) == 0 and getUInt(addr.add(4)) == 0:
 		print("[!] too many upcoming NULL fields, bailing out...")
+		break
+
+	if max_addr and addr >= max_addr:
+		print("[!] reached end of user selection")
 		break
