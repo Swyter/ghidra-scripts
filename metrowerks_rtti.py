@@ -10,13 +10,17 @@
 False
 >>> currentProgram.getMemory().getBlock(currentProgram.getAddressFactory().getAddress("0x80799500")).isExecute()
 True
->>> currentProgram.getDataTypeManager().createCategory(ghidra.program.model.data.CategoryPath("/_LOL"))
+>>> c=currentProgram.getDataTypeManager().createCategory(ghidra.program.model.data.CategoryPath("/_LOL"))
 djinn.elf/_LOL
 >>> currentProgram.getDataTypeManager().getRootCategory().removeEmptyCategory("_LOL", None)
 True
->>> ghidra.program.model.data.PointerDataType(getFunctionAt(getReferencesFrom(currentAddress)[0].getToAddress()).getSignature())
+>>> p=ghidra.program.model.data.PointerDataType(getFunctionAt(getReferencesFrom(currentAddress)[0].getToAddress()).getSignature())
 >>> getFunctionAt(currentAddress).setCallingConvention("__thiscall")
+>>> s=ghidra.program.model.data.StructureDataType("test", 0)
+>>> ss=c.addDataType(s, ghidra.program.model.data.DataTypeConflictHandler.KEEP_HANDLER)
+>>> s.add(p)
 '''
+
 
 # https://github.com/ghidraninja/ghidra_scripts/blob/master/golang_renamer.py
 addressFactory = currentProgram.getAddressFactory()
