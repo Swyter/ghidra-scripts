@@ -16,8 +16,8 @@ djinn.elf/_LOL
 True
 >>> p=ghidra.program.model.data.PointerDataType(getFunctionAt(getReferencesFrom(currentAddress)[0].getToAddress()).getSignature())
 >>> getFunctionAt(currentAddress).setCallingConvention("__thiscall")
->>> s=ghidra.program.model.data.StructureDataType("test", 0)
->>> ss=c.addDataType(s, ghidra.program.model.data.DataTypeConflictHandler.KEEP_HANDLER)
+>>> s=ghidra.program.model.data.StructureDataType("test", 0) # swy: create a struct; name and size
+>>> ss=c.addDataType(s, ghidra.program.model.data.DataTypeConflictHandler.KEEP_HANDLER) # swy: returns the added clone handle, we need to edit that one from now on
 >>> s.add(p)
 '''
 
@@ -49,6 +49,13 @@ addr = currentAddress; max_addr = None
 if currentSelection:
 	addr     = currentSelection.minAddress
 	max_addr = currentSelection.maxAddress.add(1)
+
+
+categ = currentProgram.getDataTypeManager().createCategory(ghidra.program.model.data.CategoryPath("/_LOL"))
+struc = ghidra.program.model.data.StructureDataType("A_vtbl", 0)
+struc = categ.addDataType(struc, ghidra.program.model.data.DataTypeConflictHandler.KEEP_HANDLER)
+struc.add(dt, "rtti", None)
+struc.add(ghidra.program.model.data.IntegerDataType(), "offset", None)
 
 i = 0
 while True:
@@ -152,6 +159,9 @@ while True:
 
 		if fun.getCallingConventionName() != "__thiscall":
 			fun.setCallingConvention("__thiscall")
+
+		fun_ptr_sig = ghidra.program.model.data.PointerDataType(fun.getSignature())
+		struc.add(fun_ptr_sig, fun.getName(), "swy: py")
 
 	addr = addr.add(4); i+=1
 
