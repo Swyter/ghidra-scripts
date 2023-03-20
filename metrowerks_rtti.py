@@ -52,7 +52,8 @@ if currentSelection:
 
 
 categ = currentProgram.getDataTypeManager().createCategory(ghidra.program.model.data.CategoryPath("/_LOL"))
-struc = ghidra.program.model.data.StructureDataType("A_vtbl", 0)
+class_name = getSymbolAt(addr).getParentSymbol()
+struc = ghidra.program.model.data.StructureDataType("%s_vtbl" % class_name, 0)
 struc = categ.addDataType(struc, ghidra.program.model.data.DataTypeConflictHandler.KEEP_HANDLER)
 struc.add(dt, "rtti", None)
 struc.add(ghidra.program.model.data.IntegerDataType(), "offset", None)
@@ -161,7 +162,7 @@ while True:
 			fun.setCallingConvention("__thiscall")
 
 		fun_ptr_sig = ghidra.program.model.data.PointerDataType(fun.getSignature())
-		struc.add(fun_ptr_sig, fun.getName(), "swy: py")
+		struc.add(fun_ptr_sig, fun.getName(), None)
 
 	addr = addr.add(4); i+=1
 
