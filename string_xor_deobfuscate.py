@@ -33,7 +33,7 @@ while cur_addr >= range["first"]:
 	obfuscated_byte = getUByte(cur_addr)
 	setByte(cur_addr, obfuscated_byte ^ xored_null_byte)
 
-	print(cur_addr, range["last"], "%x" % obfuscated_byte, obfuscated_byte ^ xored_null_byte)
+	print(cur_addr, range["last"], "%x" % obfuscated_byte, "%c" % (obfuscated_byte ^ xored_null_byte))
 	cur_addr = cur_addr.subtract(1); 
 
 # swy: clear any previous data types and define the whole thing as a C string
